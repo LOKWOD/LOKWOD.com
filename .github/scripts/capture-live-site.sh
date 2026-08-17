@@ -28,9 +28,12 @@ if ! grep -Eqi 'Know your property is protected|Before something fails' "$CAPTUR
 fi
 sha256sum "$CAPTURE/home.raw.html" | tee "$CAPTURE/home.sha256"
 
-# Mirror all reachable same-domain pages and first-party requisites. Links are
-# intentionally left as served because this copy will run on the same domain.
+# Mirror all reachable same-domain pages and first-party requisites. The live
+# portal intentionally redirects to OpenAI login. Wget reports that external
+# 403 as exit code 8 even though all first-party files were downloaded, so code
+# 8 is recorded and accepted; every other non-zero exit remains fatal.
 cd "$MIRROR"
+set +e
 wget \
   --mirror \
   --page-requisites \
@@ -43,10 +46,17 @@ wget \
   --waitretry=2 \
   --user-agent="$UA" \
   https://lokwod.com/
+WGET_STATUS=$?
+set -e
+printf '%s\n' "$WGET_STATUS" > "$CAPTURE/wget-status.txt"
+if [ "$WGET_STATUS" -ne 0 ] && [ "$WGET_STATUS" -ne 8 ]; then
+  echo "Mirror failed with unexpected wget exit code $WGET_STATUS" >&2
+  exit "$WGET_STATUS"
+fi
 
 # Preserve common discovery files whether or not the homepage links to them.
 mkdir -p "$MIRROR/lokwod.com"
-for path in robots.txt sitemap.xml favicon.ico manifest.webmanifest site.webmanifest; do
+for path in robots.txt sitemap.xml favicon.ico favicon.svg manifest.webmanifest site.webmanifest; do
   curl --location --silent --show-error --fail \
     --user-agent "$UA" \
     "https://lokwod.com/$path" \
@@ -92,12 +102,35 @@ cp "$CAPTURE/home.raw.html" "$SITE/index.html"
 cp "$CAPTURE/home.raw.html" "$SITE/.recovery/home.raw.html"
 cp "$CAPTURE/home.headers" "$SITE/.recovery/home.headers"
 cp "$CAPTURE/home.sha256" "$SITE/.recovery/home.sha256"
+cp "$CAPTURE/wget-status.txt" "$SITE/.recovery/wget-status.txt"
 printf 'lokwod.com\n' > "$SITE/CNAME"
 : > "$SITE/.nojekyll"
 
+# GitHub Pages needs directory index files to preserve the live site's clean
+# routes (/products, /platform, /support/request, etc.). Keep the captured
+# .html files as evidence and add equivalent route/index.html copies.
 python3 - <<'PY'
 from pathlib import Path
-import hashlib, json, mimetypes
+root = Path('/tmp/lokwod-capture/site')
+for p in sorted(root.rglob('*.html')):
+    rel = p.relative_to(root)
+    if rel.as_posix() == 'index.html' or rel.parts[0] == '.recovery':
+        continue
+    # Query-string captures all map to their queryless live route. The main
+    # route page is already captured separately, so do not turn query variants
+    # into invalid directory names.
+    if '?' in p.name:
+        continue
+    route_dir = p.with_suffix('')
+    route_dir.mkdir(parents=True, exist_ok=True)
+    target = route_dir / 'index.html'
+    if not target.exists():
+        target.write_bytes(p.read_bytes())
+PY
+
+python3 - <<'PY'
+from pathlib import Path
+import hashlib, json, mimetypes, re
 root = Path('/tmp/lokwod-capture/site')
 files = []
 for p in sorted(root.rglob('*')):
@@ -110,10 +143,14 @@ for p in sorted(root.rglob('*')):
             'sha256': hashlib.sha256(data).hexdigest(),
             'content_type': mimetypes.guess_type(rel)[0],
         })
+html = (root / 'index.html').read_text('utf-8', errors='ignore')
+first_party_paths = sorted(set(re.findall(r'''(?:href|src)=["'](/[^"'#?]*)''', html, flags=re.I)))
 manifest = {
     'source': 'https://lokwod.com/',
     'purpose': 'Recovery capture of the live pre-migration LOKWOD.com site',
     'homepage_is_byte_for_byte_live_response': True,
+    'homepage_sha256': hashlib.sha256((root / 'index.html').read_bytes()).hexdigest(),
+    'first_party_homepage_paths': first_party_paths,
     'file_count': len(files),
     'files': files,
 }
@@ -145,4 +182,5 @@ git push --force origin HEAD:recovery/live-site-exact
   echo '- Guard: original wording found; replacement wording absent'
   echo "- Files: $(find "$SITE" -type f | wc -l)"
   echo "- Homepage SHA-256: $(cut -d' ' -f1 "$CAPTURE/home.sha256")"
+  echo "- Wget status: $WGET_STATUS (8 is expected when OpenAI rejects anonymous crawler login)"
 } >> "$GITHUB_STEP_SUMMARY"
