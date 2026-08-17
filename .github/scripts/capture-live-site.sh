@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+REPO_ROOT="$(git rev-parse --show-toplevel)"
 CAPTURE=/tmp/lokwod-capture
 MIRROR="$CAPTURE/mirror"
 SITE="$CAPTURE/site"
@@ -165,6 +166,7 @@ if grep -Fqi 'Intelligent systems for the parts of your home' "$SITE/index.html"
 fi
 grep -Eqi 'Know your property is protected|Before something fails' "$SITE/index.html"
 
+cd "$REPO_ROOT"
 git config user.name 'LOKWOD Site Recovery'
 git config user.email 'actions@users.noreply.github.com'
 git checkout --orphan recovery-capture-worktree
