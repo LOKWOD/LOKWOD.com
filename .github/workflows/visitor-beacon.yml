@@ -1,0 +1,40 @@
+name: Install LOKWOD website visitor light beacon
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lokwod-visitor-beacon
+  cancel-in-progress: true
+
+jobs:
+  inject:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Inject visitor beacon into every HTML page
+        run: node scripts/inject-visitor-beacon.mjs . lokwod
+      - name: Commit normalized pages
+        run: |
+          if git diff --quiet; then
+            echo "LOKWOD visitor beacon is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Install LOKWOD visitor beacon"
+          git pull --rebase origin main
+          git push origin HEAD:main
