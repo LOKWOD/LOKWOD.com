@@ -1,0 +1,15 @@
+HTTP/2 200 
+date: Mon, 17 Aug 2026 18:45:29 GMT
+content-type: text/html; charset=utf-8
+link: </assets/_vinext_fonts/geist-8ac0455e797f/geist-ff2310f5.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </assets/_vinext_fonts/geist-8ac0455e797f/geist-875ccdd4.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </assets/_vinext_fonts/geist-8ac0455e797f/geist-52306abf.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </assets/_vinext_fonts/geist-8ac0455e797f/geist-001175b1.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </assets/_vinext_fonts/geist-8ac0455e797f/geist-98bbbccb.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-f6b33328.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-44e03052.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-0638449e.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-971fb274.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-44745446.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
+strict-transport-security: max-age=31536000; includeSubDomains
+vary: RSC, Accept, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch, Next-Url, X-Vinext-Interception-Context, X-Vinext-Mounted-Slots, X-Vinext-Rsc-Render-Mode
+content-security-policy: frame-ancestors 'none'; object-src 'none'; base-uri 'self'
+permissions-policy: camera=(), microphone=(), geolocation=(), payment=()
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+set-cookie: __cf_bm=WrRgIaFvUTNKE70Q8hIqdyI65_KEMgaPqJN6xZACn.Q-1786992327.235543-1.0.1.1-1JSVXnpBQHDtI_oPO4clOdMA8KyOuTjj.v29tF9AzEZBReLFZFWs4cqDajZ.vKT0KjoQmco1mAkOhVsPVIC476rNLy9JZAbRvckkA3Uj8dvS0eLkVrrSZIuhFoUSAwIQ; HttpOnly; SameSite=None; Secure; Path=/; Domain=lokwod.com; Expires=Mon, 17 Aug 2026 19:15:29 GMT
+server: cloudflare
+cf-ray: a2cad5fd3e95ba42-SEA
+

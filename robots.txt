@@ -1,0 +1,19 @@
+User-Agent: *
+Allow: /
+Allow: /products
+Allow: /platform
+Allow: /pricing
+Allow: /beta
+Allow: /about
+Allow: /support
+Allow: /firmware
+Allow: /privacy
+Allow: /terms
+Allow: /warranty
+Disallow: /admin
+Disallow: /portal
+Disallow: /login
+Disallow: /api
+Disallow: /support/request
+
+Sitemap: https://lokwod.com/sitemap.xml

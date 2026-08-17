@@ -1,0 +1,549 @@
+{
+  "source": "https://lokwod.com/",
+  "purpose": "Recovery capture of the live pre-migration LOKWOD.com site",
+  "homepage_is_byte_for_byte_live_response": true,
+  "homepage_sha256": "cbace525935a98b07d9aa28af065674918436bb58f57616177f6e3204379b54d",
+  "first_party_homepage_paths": [
+    "/assets/_vinext_fonts/geist-8ac0455e797f/geist-001175b1.woff2",
+    "/assets/_vinext_fonts/geist-8ac0455e797f/geist-52306abf.woff2",
+    "/assets/_vinext_fonts/geist-8ac0455e797f/geist-875ccdd4.woff2",
+    "/assets/_vinext_fonts/geist-8ac0455e797f/geist-98bbbccb.woff2",
+    "/assets/_vinext_fonts/geist-8ac0455e797f/geist-ff2310f5.woff2",
+    "/assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2",
+    "/assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-0638449e.woff2",
+    "/assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-44745446.woff2",
+    "/assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-44e03052.woff2",
+    "/assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-971fb274.woff2",
+    "/assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-f6b33328.woff2",
+    "/assets/framework-CXnKph_e.js",
+    "/assets/image-chyehVsa.js",
+    "/assets/index-B4JheyJl.js",
+    "/assets/index-DmNH0cEC.css",
+    "/assets/layout-segment-context-DLTGVvK9.js",
+    "/assets/link-ikQOdjJc.js",
+    "/assets/query-B1xsQAPP.js",
+    "/assets/rolldown-runtime-S-ySWqyJ.js",
+    "/assets/theme-toggle-bTf7zQvF.js",
+    "/beta",
+    "/cdn-cgi/challenge-platform/scripts/jsd/main.js",
+    "/firmware",
+    "/home-ecosystem-cutaway.webp",
+    "/login",
+    "/platform",
+    "/pricing",
+    "/privacy",
+    "/products",
+    "/products/well-monitor",
+    "/support",
+    "/terms",
+    "/well-monitor-dashboard.png",
+    "/well-system-cutaway.webp"
+  ],
+  "file_count": 84,
+  "files": [
+    {
+      "path": ".nojekyll",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_type": null
+    },
+    {
+      "path": ".recovery/home.headers",
+      "bytes": 2329,
+      "sha256": "76a18af41fe6fd1f99b513fadab71f4399ed6ef023581f56c9d8ca7518ff8179",
+      "content_type": null
+    },
+    {
+      "path": ".recovery/home.raw.html",
+      "bytes": 58520,
+      "sha256": "cbace525935a98b07d9aa28af065674918436bb58f57616177f6e3204379b54d",
+      "content_type": "text/html"
+    },
+    {
+      "path": ".recovery/home.sha256",
+      "bytes": 100,
+      "sha256": "eed84493c6d864cfb98fc9cfbcfb887fea5b962bd6e3f2a072048b423ac234a0",
+      "content_type": null
+    },
+    {
+      "path": ".recovery/wget-status.txt",
+      "bytes": 2,
+      "sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8",
+      "content_type": "text/plain"
+    },
+    {
+      "path": "CNAME",
+      "bytes": 11,
+      "sha256": "3d54f43e3f7fac58673944368cc245ef0abc340ac29fe88f471d970de2f20d80",
+      "content_type": null
+    },
+    {
+      "path": "about/index.html",
+      "bytes": 26099,
+      "sha256": "ab814bfc760e96f6257ff0550d5469283496d651c6edb29c6f17c57db13cdc4f",
+      "content_type": "text/html"
+    },
+    {
+      "path": "about.html",
+      "bytes": 26099,
+      "sha256": "ab814bfc760e96f6257ff0550d5469283496d651c6edb29c6f17c57db13cdc4f",
+      "content_type": "text/html"
+    },
+    {
+      "path": "assets/_vinext_fonts/geist-8ac0455e797f/geist-001175b1.woff2",
+      "bytes": 16540,
+      "sha256": "58a6b173d5ca1dec92166ea3c6cb1a84a4144556d10928ac14e8e6b40e4787bd",
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/_vinext_fonts/geist-8ac0455e797f/geist-52306abf.woff2",
+      "bytes": 7968,
+      "sha256": "f689f638f29fff460a2d5749edb5d5c38d7bef0389f32032d871f23fc6ebb008",
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/_vinext_fonts/geist-8ac0455e797f/geist-875ccdd4.woff2",
+      "bytes": 14900,
+      "sha256": "6129fc8571c3e0cb0a4c41f5160c974a843b055009dc4ad8858bd808e18a2d86",
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/_vinext_fonts/geist-8ac0455e797f/geist-98bbbccb.woff2",
+      "bytes": 29288,
+      "sha256": "9b6f5ff45b278c744b5f379a2c4ecbaf858a842b8eaf82ac8d21b699ca16c608",
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/_vinext_fonts/geist-8ac0455e797f/geist-ff2310f5.woff2",
+      "bytes": 7252,
+      "sha256": "b7a545bbb08256bd809f11cfe66d88da3e22d169ea4407737b1ef0ec1ed3d791",
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-013b2f2f.woff2",
+      "bytes": 23108,
+      "sha256": "5f3d6ad60f29d6cb708414ec6887163d63bf197377ef5417d2483ff31ace6c3b",
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-0638449e.woff2",
+      "bytes": 5892,
+      "sha256": "d67e4a94ba498635f764ddca7d1ec4271f5642f032eb24b426764480f66f8497",
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-44745446.woff2",
+      "bytes": 14712,
+      "sha256": "745994b5cd950ec201b66526375f057d540847cccfc70f4f24f5f571d26d3923",
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-44e03052.woff2",
+      "bytes": 12872,
+      "sha256": "75b3bedbebc35f347c0ae3b416aa871941555357e7b0f83767eb5987875589ed",
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-971fb274.woff2",
+      "bytes": 7728,
+      "sha256": "16e1d48b6dd29eb240aec5db36184eb182933c082cd43de7f35af686d58087d2",
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/_vinext_fonts/geist-mono-00e989178794/geist-mono-f6b33328.woff2",
+      "bytes": 6204,
+      "sha256": "e27f657e38d52887baa3b6b2f812bef93dfdd356f0810e40edd4ee284cc7e9f6",
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/beta-form-CSit1qBe.js",
+      "bytes": 3827,
+      "sha256": "a200061b18ba3e53702bf5f85438a429da2c5eb6b1952516936d58efd421f28d",
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "assets/framework-CXnKph_e.js",
+      "bytes": 189805,
+      "sha256": "73b45b606448e4dc310fbe851d8089ee752f3eb081980b3a6fec88988820ee12",
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "assets/image-chyehVsa.js",
+      "bytes": 43665,
+      "sha256": "e1b4d3868fe3495d84fabe30a175158ba12c95bf7da93775c482e40e56e5b165",
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "assets/index-B4JheyJl.js",
+      "bytes": 83454,
+      "sha256": "5bef30d9b3983871df0f774eda4737df984bbb742b958b9b3027b644a7054795",
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "assets/index-DmNH0cEC.css",
+      "bytes": 104988,
+      "sha256": "689485ff22f8a6cda59219bd1ef63c3ba2c100a2ee3b5122f6dcbf28738cb660",
+      "content_type": "text/css"
+    },
+    {
+      "path": "assets/layout-segment-context-DLTGVvK9.js",
+      "bytes": 288,
+      "sha256": "ef61cd68f9b7a65fdb8cd5881a422f4c378f764b6ccea8da5524bcf2a482e2ab",
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "assets/link-ikQOdjJc.js",
+      "bytes": 8132,
+      "sha256": "cbeeee8c9310545ca1968d130f48c040540dcf085bf8a730dbe88c4508f418b1",
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "assets/query-B1xsQAPP.js",
+      "bytes": 1564,
+      "sha256": "5e3ecc5fd4f80c9c8228cef75d2d4a8bb5f8f95ca267e7a4e62923aad52b5db8",
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "assets/rolldown-runtime-S-ySWqyJ.js",
+      "bytes": 694,
+      "sha256": "5db5ba82eef00d1dee7e86e663098c9427d01183a88d357437daff295aec3e75",
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "assets/support-form-DQKCUVCd.js",
+      "bytes": 4888,
+      "sha256": "4f62ec3c59757796c8c0a22d75b2301c47dbd65d38461c90e77e4b681ddb3c7d",
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "assets/theme-toggle-bTf7zQvF.js",
+      "bytes": 1199,
+      "sha256": "0782424fdb7a761b4ab107363875bd5f27ced6baee6846aaf2327c78d43a0c85",
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "beta/index.html",
+      "bytes": 27810,
+      "sha256": "6af234643f3ae3a04885cd929b7b565a68f4521d63d2013af78a3a2de6c1dcaf",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta.html",
+      "bytes": 27810,
+      "sha256": "6af234643f3ae3a04885cd929b7b565a68f4521d63d2013af78a3a2de6c1dcaf",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Barn Guardian.html",
+      "bytes": 27840,
+      "sha256": "1d932f072b8b48506ec5f97bb1379b7ceb4d0a09f50fabab3ae1b6db6a14e66f",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Freezer Guardian.html",
+      "bytes": 27846,
+      "sha256": "d5501f2e46fa01672a84b748540e4ab97c512ef739044b11abc01a1ee2e0d77d",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Generator Guardian.html",
+      "bytes": 27850,
+      "sha256": "abcd265295ec569a39b3582bf3eee935887ab7e8c1bad8b536d54bd2ca2d85f6",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=HVAC Controller.html",
+      "bytes": 27844,
+      "sha256": "2658ef877550f848c204a32e09371ce2413fa07876ce52b8bd45cb8fa7ab3832",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Other.html",
+      "bytes": 27824,
+      "sha256": "8e81d339798ea951f213e0ed95dc0dde7b1c9b26c251825cbfd56bbb5142621a",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Power Sentinel.html",
+      "bytes": 27842,
+      "sha256": "2edd3dfab4653844547309e9d60a5e97ead9cf7bf4fd35fa284fad6fba07f88f",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Septic Sentinel.html",
+      "bytes": 27844,
+      "sha256": "eb345f48535e165a3133a7bd9ed86d54aad9ede28f5762392cea3534420ad31f",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Sump Guardian.html",
+      "bytes": 27840,
+      "sha256": "9c179a63ee4dc0274c0d26258defde780d2b4d0c9d49ebb4400e618251457463",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Tank Level Monitor.html",
+      "bytes": 27850,
+      "sha256": "a89c14c4f24f50da236093869a21734f8925e39b9bf14eb81f9cb0dce0a9eefa",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Water Heater Guardian.html",
+      "bytes": 27856,
+      "sha256": "363c598e7d80148d405ffc3bd644238bf4359ed836589f8e9056b3b2122e228f",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Water Shutoff.html",
+      "bytes": 27840,
+      "sha256": "a40325eb4372c5666bb856c153c066ccb4552418e06df6f70ff6efe873837cdc",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Well Monitor Complete.html",
+      "bytes": 27856,
+      "sha256": "6a64062bc38546d28ba66e79c5df20ed52bbcdb4f4baa8f16469d8ee5f2a7801",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Well Monitor Core.html",
+      "bytes": 27848,
+      "sha256": "6d778a55e0bfb941d9298dda4dde72dfd019bb3b7488e0bc44c35a2162aaf09e",
+      "content_type": "text/html"
+    },
+    {
+      "path": "beta?product=Workshop Monitor.html",
+      "bytes": 27846,
+      "sha256": "4efb6bec4d331be3f2f9950f3e6e4ae7bb3229ade4eb446eb4d81a2d30c05aac",
+      "content_type": "text/html"
+    },
+    {
+      "path": "favicon.svg",
+      "bytes": 712,
+      "sha256": "e6d2e59b7b5bbb0342e0fb496dfc262decbfe4426bbb7b047aec8d467d1dc6f7",
+      "content_type": "image/svg+xml"
+    },
+    {
+      "path": "firmware/index.html",
+      "bytes": 32521,
+      "sha256": "df36bcb854d36617451258123acec88279cc8d93651d4bba1b13d9a16342f9e6",
+      "content_type": "text/html"
+    },
+    {
+      "path": "firmware.html",
+      "bytes": 32521,
+      "sha256": "df36bcb854d36617451258123acec88279cc8d93651d4bba1b13d9a16342f9e6",
+      "content_type": "text/html"
+    },
+    {
+      "path": "home-ecosystem-cutaway.webp",
+      "bytes": 101364,
+      "sha256": "cdf703ffa1f6c4bd5432710765bf7487d4d8f400671157cf78796e5769be6664",
+      "content_type": "image/webp"
+    },
+    {
+      "path": "hvac/stable/LOKWOD_HVAC_Controller-1.0.0.bin",
+      "bytes": 1814976,
+      "sha256": "8e2e04d20d71bb94e66c89c096ae40659d4cf39ff3f10ce5e54964331d9ce0ec",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "path": "hvac/stable/LOKWOD_HVAC_Controller-1.0.31.bin",
+      "bytes": 1959296,
+      "sha256": "38f1d9cf2164027c52ad91d53ea7f8fba977d62122ce01fa27ec8aa3dae54c47",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "path": "index.html",
+      "bytes": 58520,
+      "sha256": "cbace525935a98b07d9aa28af065674918436bb58f57616177f6e3204379b54d",
+      "content_type": "text/html"
+    },
+    {
+      "path": "login/index.html",
+      "bytes": 26130,
+      "sha256": "1440cebfd00486797e856e75c4b00a0529923ba180b4004a4a3eaebcb97f03d9",
+      "content_type": "text/html"
+    },
+    {
+      "path": "login.html",
+      "bytes": 26130,
+      "sha256": "1440cebfd00486797e856e75c4b00a0529923ba180b4004a4a3eaebcb97f03d9",
+      "content_type": "text/html"
+    },
+    {
+      "path": "platform/index.html",
+      "bytes": 33367,
+      "sha256": "1d28b1400e8901e023385ab090dc21c9d5511da5482e5bd25171747afb2582a8",
+      "content_type": "text/html"
+    },
+    {
+      "path": "platform.html",
+      "bytes": 33367,
+      "sha256": "1d28b1400e8901e023385ab090dc21c9d5511da5482e5bd25171747afb2582a8",
+      "content_type": "text/html"
+    },
+    {
+      "path": "pricing/index.html",
+      "bytes": 33168,
+      "sha256": "215ae7e1a544699939922e4c7b7a916873e03b746d16f83d92ba049f1840df3c",
+      "content_type": "text/html"
+    },
+    {
+      "path": "pricing.html",
+      "bytes": 33168,
+      "sha256": "215ae7e1a544699939922e4c7b7a916873e03b746d16f83d92ba049f1840df3c",
+      "content_type": "text/html"
+    },
+    {
+      "path": "privacy/index.html",
+      "bytes": 27659,
+      "sha256": "19121a255bb31ea6c9c136a893f401061d4bf3b67dd2aa6b676e8928451af085",
+      "content_type": "text/html"
+    },
+    {
+      "path": "privacy.html",
+      "bytes": 27659,
+      "sha256": "19121a255bb31ea6c9c136a893f401061d4bf3b67dd2aa6b676e8928451af085",
+      "content_type": "text/html"
+    },
+    {
+      "path": "products/index.html",
+      "bytes": 43902,
+      "sha256": "51b059b3160b4e3408295e37710609a1f6029ec5ab23997cb1ccde712bc22622",
+      "content_type": "text/html"
+    },
+    {
+      "path": "products/well-monitor/index.html",
+      "bytes": 37570,
+      "sha256": "a9093e56bfc08f3a1d07b7a9a822864feba93f3c221788caeea527c477811795",
+      "content_type": "text/html"
+    },
+    {
+      "path": "products/well-monitor.html",
+      "bytes": 37570,
+      "sha256": "a9093e56bfc08f3a1d07b7a9a822864feba93f3c221788caeea527c477811795",
+      "content_type": "text/html"
+    },
+    {
+      "path": "products.html",
+      "bytes": 43902,
+      "sha256": "51b059b3160b4e3408295e37710609a1f6029ec5ab23997cb1ccde712bc22622",
+      "content_type": "text/html"
+    },
+    {
+      "path": "robots.txt",
+      "bytes": 315,
+      "sha256": "c6513a8a6f013067d2f653acf8cf21b3cdb456564c443dcb924a372eb73ef8af",
+      "content_type": "text/plain"
+    },
+    {
+      "path": "sitemap.xml",
+      "bytes": 2267,
+      "sha256": "dfe33e471546d31d34804e3b6c1c2c7e26951fa36e3f2fa85b16416966889d92",
+      "content_type": "application/xml"
+    },
+    {
+      "path": "support/guides/index.html",
+      "bytes": 36468,
+      "sha256": "512e96b7607986cbc843a0fceb4b18b3dcf45f24441467368bab8ed1401076b1",
+      "content_type": "text/html"
+    },
+    {
+      "path": "support/guides.html",
+      "bytes": 36468,
+      "sha256": "512e96b7607986cbc843a0fceb4b18b3dcf45f24441467368bab8ed1401076b1",
+      "content_type": "text/html"
+    },
+    {
+      "path": "support/index.html",
+      "bytes": 30853,
+      "sha256": "ddc706a1fd146f684ac5a09704c5c31480055177c72f8217d466b6785166fc76",
+      "content_type": "text/html"
+    },
+    {
+      "path": "support/request/index.html",
+      "bytes": 27963,
+      "sha256": "a90d8fb26bf54ec9edb07f01df142916cb017f2bbd9800be6e5ff3b315469e39",
+      "content_type": "text/html"
+    },
+    {
+      "path": "support/request.html",
+      "bytes": 27963,
+      "sha256": "a90d8fb26bf54ec9edb07f01df142916cb017f2bbd9800be6e5ff3b315469e39",
+      "content_type": "text/html"
+    },
+    {
+      "path": "support/request?category=account.html",
+      "bytes": 27982,
+      "sha256": "85aa8909a6c219fd71202da6df036b681fbc671fa5d2bdab0d280c8ee8fb71a1",
+      "content_type": "text/html"
+    },
+    {
+      "path": "support/request?category=beta.html",
+      "bytes": 27976,
+      "sha256": "c6abb3bc9a2ad99e7e8bcbd9375fa27ed45f7913ddfd19d4350c243cacb17a95",
+      "content_type": "text/html"
+    },
+    {
+      "path": "support/request?category=connectivity.html",
+      "bytes": 27992,
+      "sha256": "fd7200f5c330b3a2f2ef9c92bfb58969d29cb28b6ea981a36a0f42ed82a5fc9a",
+      "content_type": "text/html"
+    },
+    {
+      "path": "support/request?category=warranty.html",
+      "bytes": 27984,
+      "sha256": "c31e304e45da66830bb8bfa61cfa133b9d9bd11e9817224903e1183b45d3bceb",
+      "content_type": "text/html"
+    },
+    {
+      "path": "support.html",
+      "bytes": 30853,
+      "sha256": "ddc706a1fd146f684ac5a09704c5c31480055177c72f8217d466b6785166fc76",
+      "content_type": "text/html"
+    },
+    {
+      "path": "terms/index.html",
+      "bytes": 27152,
+      "sha256": "55603d3c30f24b40989963096c9ec8b7fcb60c1d6a42beee765afbcf7b0a641e",
+      "content_type": "text/html"
+    },
+    {
+      "path": "terms.html",
+      "bytes": 27152,
+      "sha256": "55603d3c30f24b40989963096c9ec8b7fcb60c1d6a42beee765afbcf7b0a641e",
+      "content_type": "text/html"
+    },
+    {
+      "path": "warranty/index.html",
+      "bytes": 26542,
+      "sha256": "31327f878efbd4e5943424a1bc65bf605ee64681864ef04e8d29166e4e3c4cdd",
+      "content_type": "text/html"
+    },
+    {
+      "path": "warranty.html",
+      "bytes": 26542,
+      "sha256": "31327f878efbd4e5943424a1bc65bf605ee64681864ef04e8d29166e4e3c4cdd",
+      "content_type": "text/html"
+    },
+    {
+      "path": "well-monitor/stable/LOKWOD_WellMonitor-0.6.0.bin",
+      "bytes": 1310096,
+      "sha256": "ebda876024c6edddafaa33ae27011294da16e386f6cc323883e51e45a4041d1b",
+      "content_type": "application/octet-stream"
+    },
+    {
+      "path": "well-monitor-dashboard.png",
+      "bytes": 103630,
+      "sha256": "0d68a767c29d2d314c5e87b3a9a3350325ba333a5ad70fe0b3c4c14c5478915a",
+      "content_type": "image/png"
+    },
+    {
+      "path": "well-system-cutaway.webp",
+      "bytes": 128820,
+      "sha256": "9d1f2eb91ee3964208469b64e147928b5762eaeef5775336649d31e51e639403",
+      "content_type": "image/webp"
+    }
+  ]
+}
