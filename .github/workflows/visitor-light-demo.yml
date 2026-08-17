@@ -1,0 +1,78 @@
+name: One-time website visitor light demo
+
+on:
+  push:
+    paths:
+      - .github/workflows/visitor-light-demo.yml
+
+permissions:
+  contents: read
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send three real visitor-beacon events
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORKER='https://lokwod-visitor-beacon.syracuseappraiser.workers.dev'
+          UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
+
+          send_visit() {
+            local page_url="$1"
+            local origin="$2"
+            local site="$3"
+            local path="$4"
+            local title="$5"
+            local label="$6"
+
+            echo "Opening ${page_url} and sending ${label} visitor event..."
+            curl --fail-with-body --silent --show-error --location \
+              --max-time 30 --user-agent "$UA" \
+              --output /dev/null "$page_url"
+
+            status="$(curl --silent --show-error --max-time 30 \
+              --output /tmp/visitor-response --write-out '%{http_code}' \
+              --request POST "$WORKER/v1/hit" \
+              --user-agent "$UA" \
+              --header "Origin: $origin" \
+              --header 'Content-Type: text/plain;charset=UTF-8' \
+              --data-raw "{\"site\":\"$site\",\"path\":\"$path\",\"title\":\"$title\"}")"
+
+            test "$status" = '204' || {
+              echo "Unexpected HTTP $status"
+              cat /tmp/visitor-response
+              exit 1
+            }
+          }
+
+          send_visit \
+            'https://nauticaldream.com/thousand-islands-guide.html' \
+            'https://nauticaldream.com' \
+            'nautical-dream' \
+            '/thousand-islands-guide.html' \
+            'Thousand Islands Boating Guide' \
+            'AQUA'
+
+          sleep 6
+
+          send_visit \
+            'https://lokwod.com/products/well-monitor' \
+            'https://lokwod.com' \
+            'lokwod' \
+            '/products/well-monitor' \
+            'LOKWOD Well Monitor' \
+            'BLUE'
+
+          sleep 6
+
+          send_visit \
+            'https://mradventuredad.com/' \
+            'https://mradventuredad.com' \
+            'mr-adventure-dad' \
+            '/' \
+            'Mr Adventure Dad' \
+            'ORANGE'
+
+          echo 'Visitor-light demo complete.'
