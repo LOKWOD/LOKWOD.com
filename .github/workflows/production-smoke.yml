@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/production-smoke.yml
+  pull_request:
   schedule:
     - cron: '17 12 * * *'
 
@@ -16,7 +17,7 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify production routing and OTA manifests
+      - name: Verify production routing, dashboard assets, and OTA manifests
         shell: bash
         run: |
           set -euo pipefail
@@ -52,6 +53,18 @@ jobs:
           expect_code 'https://lokwod.com/support' 200
           expect_code 'https://lokwod.com/beta' 200
 
+          for asset in \
+            password-form-ByFkEbCB.js \
+            fleet-explorer-CcRs--a4.js \
+            plan-control-B90fg5sr.js \
+            portal-client-_LjjmoS0.js \
+            admin-login-form-BArNTL61.js \
+            sign-out-DCtjIMSg.js \
+            support-form-DQKCUVCd.js \
+            beta-form-CSit1qBe.js; do
+            expect_code "https://lokwod.com/assets/$asset" 200
+          done
+
           for manifest in \
             'https://updates.lokwod.com/hvac/stable/manifest.json' \
             'https://updates.lokwod.com/well-monitor/stable/manifest.json'; do
@@ -66,6 +79,6 @@ assert isinstance(d['version'], str) and d['version']
 assert isinstance(d['firmware_url'], str) and d['firmware_url'].startswith('https://')
 assert isinstance(d['size'], int) and d['size'] > 0
 assert isinstance(d['sha256'], str) and len(d['sha256']) == 64
-print('manifest OK', d['version'])
+print('manifest OK', d['version'], d['size'])
 PY
           done
