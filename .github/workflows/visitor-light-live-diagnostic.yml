@@ -1,0 +1,54 @@
+name: Visitor Light live diagnostic
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/visitor-light-live-diagnostic.yml
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check live beacon markup and Worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          WORKER='https://lokwod-visitor-beacon.syracuseappraiser.workers.dev'
+
+          echo '=== Worker health ==='
+          curl --fail --silent --show-error --max-time 15 "$WORKER/health"
+          echo
+
+          check_site() {
+            url="$1"
+            site="$2"
+            tmp="$(mktemp)"
+            echo "=== $url ==="
+            curl --fail --silent --show-error --location --max-time 20 "$url" -o "$tmp"
+            grep -F "$WORKER/beacon.js" "$tmp"
+            grep -F "data-site=\"$site\"" "$tmp"
+            echo "Beacon markup OK for $site"
+          }
+
+          check_site 'https://lokwod.com/' 'lokwod'
+          check_site 'https://nauticaldream.com/' 'nautical-dream'
+
+          hit() {
+            origin="$1"
+            site="$2"
+            path="$3"
+            payload="{\"site\":\"$site\",\"path\":\"$path\",\"title\":\"Visitor Light live diagnostic\"}"
+            status="$(curl --silent --show-error --max-time 15 --output /tmp/visitor-response --write-out '%{http_code}' --request POST "$WORKER/v1/hit" --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/140.0 Safari/537.36' --header "Origin: $origin" --header 'Content-Type: text/plain;charset=UTF-8' --data-raw "$payload")"
+            echo "$site synthetic hit -> HTTP $status"
+            if [ "$status" != '204' ]; then
+              cat /tmp/visitor-response
+              exit 1
+            fi
+          }
+
+          hit 'https://lokwod.com' 'lokwod' '/__visitor-light-diagnostic'
+          sleep 2
+          hit 'https://nauticaldream.com' 'nautical-dream' '/__visitor-light-diagnostic'
