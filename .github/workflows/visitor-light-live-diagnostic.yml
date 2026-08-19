@@ -1,4 +1,4 @@
-# Recheck after Nautical source normalization
+# Probe live sites and LOKWOD GitHub Pages origin
 name: Visitor Light live diagnostic
 
 on:
@@ -21,13 +21,8 @@ jobs:
           failures=0
 
           echo '=== Worker health ==='
-          if curl --fail --silent --show-error --max-time 15 "$WORKER/health"; then
-            echo
-            echo 'Worker health OK'
-          else
-            echo 'Worker health FAILED'
-            failures=$((failures+1))
-          fi
+          curl --fail --silent --show-error --max-time 15 "$WORKER/health" || failures=$((failures+1))
+          echo
 
           check_site() {
             host="$1"
@@ -37,47 +32,38 @@ jobs:
             echo "=== DNS $host ==="
             getent ahostsv4 "$host" | awk '{print $1}' | sort -u || true
             echo "=== HEADERS $url ==="
-            curl --silent --show-error --location --head --max-time 20 "$url" | sed -n '1,80p' || true
+            curl --silent --show-error --head --max-time 20 "$url" | sed -n '1,50p' || true
             echo "=== HTML $url ==="
             if ! curl --fail --silent --show-error --location --max-time 20 "$url" -o "$tmp"; then
               echo "Live page fetch FAILED for $site"
               failures=$((failures+1))
               return
             fi
+            echo "final_url=$(curl --silent --show-error --location --max-time 20 -o /dev/null -w '%{url_effective}' "$url")"
             echo "bytes=$(wc -c < "$tmp") sha256=$(sha256sum "$tmp" | awk '{print $1}')"
-            if grep -Fq "$WORKER/beacon.js" "$tmp"; then
-              echo 'Worker script URL present'
-            else
-              echo 'Worker script URL MISSING'
-              failures=$((failures+1))
-            fi
-            if grep -Fq "data-site=\"$site\"" "$tmp"; then
-              echo "data-site=$site present"
-            else
-              echo "data-site=$site MISSING"
-              failures=$((failures+1))
-            fi
+            if grep -Fq "$WORKER/beacon.js" "$tmp"; then echo 'Worker script URL present'; else echo 'Worker script URL MISSING'; failures=$((failures+1)); fi
+            if grep -Fq "data-site=\"$site\"" "$tmp"; then echo "data-site=$site present"; else echo "data-site=$site MISSING"; failures=$((failures+1)); fi
           }
 
           check_site 'lokwod.com' 'https://lokwod.com/' 'lokwod'
           check_site 'nauticaldream.com' 'https://nauticaldream.com/' 'nautical-dream'
 
+          echo '=== LOKWOD GitHub Pages candidate ==='
+          curl --silent --show-error --head --max-time 20 'https://lokwod.github.io/LOKWOD.com/' | sed -n '1,60p' || true
+          curl --silent --show-error --location --max-time 20 -o /tmp/lokwod-pages -w 'status=%{http_code} final=%{url_effective} bytes=%{size_download}\n' 'https://lokwod.github.io/LOKWOD.com/' || true
+          grep -F "$WORKER/beacon.js" /tmp/lokwod-pages || true
+          grep -F 'data-site="lokwod"' /tmp/lokwod-pages || true
+
           hit() {
             origin="$1"
             site="$2"
-            path="$3"
-            payload="{\"site\":\"$site\",\"path\":\"$path\",\"title\":\"Visitor Light live diagnostic\"}"
-            status="$(curl --silent --show-error --max-time 15 --output /tmp/visitor-response --write-out '%{http_code}' --request POST "$WORKER/v1/hit" --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/140.0 Safari/537.36' --header "Origin: $origin" --header 'Content-Type: text/plain;charset=UTF-8' --data-raw "$payload" || true)"
+            payload="{\"site\":\"$site\",\"path\":\"/__visitor-light-diagnostic\",\"title\":\"Visitor Light live diagnostic\"}"
+            status="$(curl --silent --show-error --max-time 15 --output /tmp/visitor-response --write-out '%{http_code}' --request POST "$WORKER/v1/hit" --user-agent 'Mozilla/5.0 Chrome/140.0' --header "Origin: $origin" --header 'Content-Type: text/plain;charset=UTF-8' --data-raw "$payload" || true)"
             echo "$site synthetic hit -> HTTP $status"
-            if [ "$status" != '204' ]; then
-              cat /tmp/visitor-response || true
-              failures=$((failures+1))
-            fi
+            if [ "$status" != '204' ]; then failures=$((failures+1)); fi
           }
 
-          hit 'https://lokwod.com' 'lokwod' '/__visitor-light-diagnostic'
-          sleep 2
-          hit 'https://nauticaldream.com' 'nautical-dream' '/__visitor-light-diagnostic'
-
+          hit 'https://lokwod.com' 'lokwod'
+          hit 'https://nauticaldream.com' 'nautical-dream'
           echo "Diagnostic failures: $failures"
           test "$failures" -eq 0
