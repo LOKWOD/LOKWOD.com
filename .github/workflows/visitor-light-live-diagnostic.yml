@@ -1,5 +1,5 @@
-# ready
-name: LOKWOD backend comparison
+# Post-DNS restoration verification
+name: LOKWOD backend restoration verification
 
 on:
   pull_request:
@@ -14,35 +14,32 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     steps:
-      - name: Compare GitHub Pages with previous Cloudflare app
+      - name: Verify live backend, protected routes, and visitor beacon
         shell: bash
         run: |
           set -u -o pipefail
-          echo '=== STATIC REPO: dashboard-only chunks referenced by main bundle ==='
-          curl -fsSL 'https://raw.githubusercontent.com/LOKWOD/LOKWOD.com/main/assets/index-B4JheyJl.js' -o /tmp/main.js
-          grep -oE 'assets/[A-Za-z0-9_.-]+\.js' /tmp/main.js | sort -u | grep -E 'portal|fleet|plan|password|admin|sign-out|support|beta' || true
-          echo '=== STATIC REPO: referenced dashboard chunks availability ==='
-          for f in password-form-ByFkEbCB.js fleet-explorer-CcRs--a4.js plan-control-B90fg5sr.js portal-client-_LjjmoS0.js admin-login-form-BArNTL61.js sign-out-DCtjIMSg.js support-form-DQKCUVCd.js beta-form-CSit1qBe.js; do
-            code=$(curl -sS -o /dev/null -w '%{http_code}' "https://raw.githubusercontent.com/LOKWOD/LOKWOD.com/main/assets/$f")
-            echo "$f -> $code"
-          done
+          WORKER='https://lokwod-visitor-beacon.syracuseappraiser.workers.dev'
+
+          echo '=== DNS ==='
+          echo 'NS:'; dig +short NS lokwod.com
+          echo 'A:'; dig +short A lokwod.com
+          echo 'www CNAME:'; dig +short CNAME www.lokwod.com
+
           probe() {
-            label="$1"; ip="$2"; path="$3"
-            safe=$(printf '%s_%s' "$label" "$path" | tr -c 'A-Za-z0-9' '_')
-            out="/tmp/${safe}.body"; hdr="/tmp/${safe}.hdr"
-            if [ -n "$ip" ]; then
-              code=$(curl -k -sS --max-time 20 --resolve "lokwod.com:443:$ip" -D "$hdr" -o "$out" -w '%{http_code}' "https://lokwod.com$path" || true)
-            else
-              code=$(curl -sS --max-time 20 -D "$hdr" -o "$out" -w '%{http_code}' "https://lokwod.com$path" || true)
-            fi
-            echo "--- $label $path -> HTTP $code bytes=$(wc -c < "$out" 2>/dev/null || echo 0) ---"
-            grep -iE '^(location|server|content-type|set-cookie):' "$hdr" | head -20 || true
-            grep -oE 'assets/[A-Za-z0-9_.-]+\.js' "$out" | sort -u | grep -E 'portal|fleet|plan|password|admin|sign-out|support|beta' || true
-            grep -oE '/api/[A-Za-z0-9_./?=&%-]+' "$out" | sort -u | head -50 || true
+            path="$1"
+            out=$(mktemp); hdr=$(mktemp)
+            code=$(curl -sS --max-time 20 -D "$hdr" -o "$out" -w '%{http_code}' "https://lokwod.com$path" || true)
+            echo "--- $path -> HTTP $code bytes=$(wc -c < "$out" 2>/dev/null || echo 0) ---"
+            grep -iE '^(location|server|content-type|set-cookie):' "$hdr" | head -12 || true
+            if grep -Fq "$WORKER/beacon.js" "$out"; then echo 'VISITOR_BEACON=present'; else echo 'VISITOR_BEACON=missing'; fi
+            if grep -Fq 'data-site="lokwod"' "$out"; then echo 'VISITOR_SITE_ID=present'; else echo 'VISITOR_SITE_ID=missing'; fi
           }
-          echo '=== CURRENT ==='
-          for p in / /login /portal '/signin-with-chatgpt?return_to=%2Fportal' /admin /admin/login /api/auth/session /api/status; do probe current '' "$p"; done
-          echo '=== OLD CLOUDFLARE 162.159.143.30 ==='
-          for p in / /login /portal '/signin-with-chatgpt?return_to=%2Fportal' /admin /admin/login /api/auth/session /api/status; do probe oldcf 162.159.143.30 "$p"; done
-          echo '=== OLD CLOUDFLARE 172.66.3.26 ==='
-          for p in /portal /admin /api/auth/session; do probe oldcf2 172.66.3.26 "$p"; done
+
+          for p in / /login /portal '/signin-with-chatgpt?return_to=%2Fportal' /admin /admin/login /firmware /support /beta; do probe "$p"; done
+
+          echo '=== Visitor Worker health ==='
+          curl -fsS --max-time 15 "$WORKER/health" || true
+          echo
+          payload='{"site":"lokwod","path":"/__restoration-check","title":"LOKWOD restoration check"}'
+          status=$(curl -sS --max-time 15 -o /tmp/hit-response -w '%{http_code}' -X POST "$WORKER/v1/hit" -H 'Origin: https://lokwod.com' -H 'Content-Type: text/plain;charset=UTF-8' --data-raw "$payload" || true)
+          echo "Visitor synthetic hit -> HTTP $status"
