@@ -1,4 +1,4 @@
-# Probe live sites and LOKWOD GitHub Pages origin
+# Probe live sites and bypass DNS to test the LOKWOD GitHub Pages copy
 name: Visitor Light live diagnostic
 
 on:
@@ -31,15 +31,12 @@ jobs:
             tmp="$(mktemp)"
             echo "=== DNS $host ==="
             getent ahostsv4 "$host" | awk '{print $1}' | sort -u || true
-            echo "=== HEADERS $url ==="
-            curl --silent --show-error --head --max-time 20 "$url" | sed -n '1,50p' || true
             echo "=== HTML $url ==="
             if ! curl --fail --silent --show-error --location --max-time 20 "$url" -o "$tmp"; then
               echo "Live page fetch FAILED for $site"
               failures=$((failures+1))
               return
             fi
-            echo "final_url=$(curl --silent --show-error --location --max-time 20 -o /dev/null -w '%{url_effective}' "$url")"
             echo "bytes=$(wc -c < "$tmp") sha256=$(sha256sum "$tmp" | awk '{print $1}')"
             if grep -Fq "$WORKER/beacon.js" "$tmp"; then echo 'Worker script URL present'; else echo 'Worker script URL MISSING'; failures=$((failures+1)); fi
             if grep -Fq "data-site=\"$site\"" "$tmp"; then echo "data-site=$site present"; else echo "data-site=$site MISSING"; failures=$((failures+1)); fi
@@ -48,11 +45,15 @@ jobs:
           check_site 'lokwod.com' 'https://lokwod.com/' 'lokwod'
           check_site 'nauticaldream.com' 'https://nauticaldream.com/' 'nautical-dream'
 
-          echo '=== LOKWOD GitHub Pages candidate ==='
-          curl --silent --show-error --head --max-time 20 'https://lokwod.github.io/LOKWOD.com/' | sed -n '1,60p' || true
-          curl --silent --show-error --location --max-time 20 -o /tmp/lokwod-pages -w 'status=%{http_code} final=%{url_effective} bytes=%{size_download}\n' 'https://lokwod.github.io/LOKWOD.com/' || true
-          grep -F "$WORKER/beacon.js" /tmp/lokwod-pages || true
-          grep -F 'data-site="lokwod"' /tmp/lokwod-pages || true
+          echo '=== LOKWOD GitHub Pages origin via direct IP ==='
+          for ip in 185.199.108.153 185.199.109.153 185.199.110.153 185.199.111.153; do
+            echo "-- GitHub Pages IP $ip --"
+            code="$(curl --silent --show-error --max-time 20 --resolve "lokwod.com:443:$ip" -o /tmp/lokwod-github -w '%{http_code}' https://lokwod.com/ || true)"
+            echo "HTTP $code bytes=$(wc -c < /tmp/lokwod-github 2>/dev/null || echo 0)"
+            grep -F "$WORKER/beacon.js" /tmp/lokwod-github 2>/dev/null && echo 'GitHub copy has Worker URL' || true
+            grep -F 'data-site="lokwod"' /tmp/lokwod-github 2>/dev/null && echo 'GitHub copy has data-site=lokwod' || true
+            [ "$code" = '200' ] && break
+          done
 
           hit() {
             origin="$1"
