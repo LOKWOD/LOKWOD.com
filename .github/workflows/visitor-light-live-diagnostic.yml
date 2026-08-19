@@ -1,5 +1,4 @@
-# Probe live sites and bypass DNS to test the LOKWOD GitHub Pages copy
-name: Visitor Light live diagnostic
+name: LOKWOD DNS diagnostic
 
 on:
   pull_request:
@@ -13,58 +12,25 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     steps:
-      - name: Check live beacon markup, hosting, and Worker
+      - name: Resolve authoritative DNS and compare hosting
         shell: bash
         run: |
-          set -u -o pipefail
-          WORKER='https://lokwod-visitor-beacon.syracuseappraiser.workers.dev'
-          failures=0
-
-          echo '=== Worker health ==='
-          curl --fail --silent --show-error --max-time 15 "$WORKER/health" || failures=$((failures+1))
-          echo
-
-          check_site() {
-            host="$1"
-            url="$2"
-            site="$3"
-            tmp="$(mktemp)"
-            echo "=== DNS $host ==="
-            getent ahostsv4 "$host" | awk '{print $1}' | sort -u || true
-            echo "=== HTML $url ==="
-            if ! curl --fail --silent --show-error --location --max-time 20 "$url" -o "$tmp"; then
-              echo "Live page fetch FAILED for $site"
-              failures=$((failures+1))
-              return
-            fi
-            echo "bytes=$(wc -c < "$tmp") sha256=$(sha256sum "$tmp" | awk '{print $1}')"
-            if grep -Fq "$WORKER/beacon.js" "$tmp"; then echo 'Worker script URL present'; else echo 'Worker script URL MISSING'; failures=$((failures+1)); fi
-            if grep -Fq "data-site=\"$site\"" "$tmp"; then echo "data-site=$site present"; else echo "data-site=$site MISSING"; failures=$((failures+1)); fi
-          }
-
-          check_site 'lokwod.com' 'https://lokwod.com/' 'lokwod'
-          check_site 'nauticaldream.com' 'https://nauticaldream.com/' 'nautical-dream'
-
-          echo '=== LOKWOD GitHub Pages origin via direct IP ==='
-          for ip in 185.199.108.153 185.199.109.153 185.199.110.153 185.199.111.153; do
-            echo "-- GitHub Pages IP $ip --"
-            code="$(curl --silent --show-error --max-time 20 --resolve "lokwod.com:443:$ip" -o /tmp/lokwod-github -w '%{http_code}' https://lokwod.com/ || true)"
-            echo "HTTP $code bytes=$(wc -c < /tmp/lokwod-github 2>/dev/null || echo 0)"
-            grep -F "$WORKER/beacon.js" /tmp/lokwod-github 2>/dev/null && echo 'GitHub copy has Worker URL' || true
-            grep -F 'data-site="lokwod"' /tmp/lokwod-github 2>/dev/null && echo 'GitHub copy has data-site=lokwod' || true
-            [ "$code" = '200' ] && break
-          done
-
-          hit() {
-            origin="$1"
-            site="$2"
-            payload="{\"site\":\"$site\",\"path\":\"/__visitor-light-diagnostic\",\"title\":\"Visitor Light live diagnostic\"}"
-            status="$(curl --silent --show-error --max-time 15 --output /tmp/visitor-response --write-out '%{http_code}' --request POST "$WORKER/v1/hit" --user-agent 'Mozilla/5.0 Chrome/140.0' --header "Origin: $origin" --header 'Content-Type: text/plain;charset=UTF-8' --data-raw "$payload" || true)"
-            echo "$site synthetic hit -> HTTP $status"
-            if [ "$status" != '204' ]; then failures=$((failures+1)); fi
-          }
-
-          hit 'https://lokwod.com' 'lokwod'
-          hit 'https://nauticaldream.com' 'nautical-dream'
-          echo "Diagnostic failures: $failures"
-          test "$failures" -eq 0
+          set -euo pipefail
+          echo '=== LOKWOD.COM DNS ==='
+          dig +short NS lokwod.com
+          echo '--- apex A ---'
+          dig +short A lokwod.com
+          echo '--- apex AAAA ---'
+          dig +short AAAA lokwod.com
+          echo '--- www CNAME ---'
+          dig +short CNAME www.lokwod.com
+          echo '--- www A ---'
+          dig +short A www.lokwod.com
+          echo '=== NAUTICALDREAM.COM DNS (comparison) ==='
+          dig +short NS nauticaldream.com
+          echo '--- apex A ---'
+          dig +short A nauticaldream.com
+          echo '=== LIVE SERVER HEADERS ==='
+          curl -sSI https://lokwod.com/ | sed -n '1,30p'
+          echo '--- Nautical Dream ---'
+          curl -sSI https://nauticaldream.com/ | sed -n '1,30p'
