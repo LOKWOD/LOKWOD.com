@@ -1,0 +1,52 @@
+name: Restored backend diagnostic
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/backend-restored-diagnostic.yml
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check dynamic assets and OTA manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo '=== DASHBOARD ASSETS ==='
+          for f in password-form-ByFkEbCB.js fleet-explorer-CcRs--a4.js plan-control-B90fg5sr.js portal-client-_LjjmoS0.js admin-login-form-BArNTL61.js sign-out-DCtjIMSg.js support-form-DQKCUVCd.js beta-form-CSit1qBe.js; do
+            code=$(curl -sS --max-time 20 -o /dev/null -w '%{http_code}' "https://lokwod.com/assets/$f")
+            echo "$f -> HTTP $code"
+            test "$code" = '200'
+          done
+
+          echo '=== WWW ==='
+          curl -sS --max-time 20 -o /dev/null -D /tmp/www-hdr -w 'HTTP %{http_code}\n' 'https://www.lokwod.com/'
+          grep -iE '^(location|server|content-type):' /tmp/www-hdr | head -10 || true
+
+          echo '=== OTA MANIFESTS ==='
+          for url in \
+            'https://updates.lokwod.com/hvac/stable/manifest.json' \
+            'https://updates.lokwod.com/well-monitor/stable/manifest.json'; do
+            curl -fsS --max-time 20 "$url" -o /tmp/manifest.json
+            echo "--- $url ---"
+            python3 - <<'PY'
+import json
+p='/tmp/manifest.json'
+d=json.load(open(p))
+for key in ('version','firmware_url','size','build_date','release_notes','sha256'):
+    assert key in d, f'missing {key}'
+assert isinstance(d['version'], str) and d['version']
+assert isinstance(d['firmware_url'], str) and d['firmware_url'].startswith('https://')
+assert isinstance(d['size'], int) and d['size'] > 0
+assert isinstance(d['sha256'], str) and len(d['sha256']) == 64
+print('version=', d['version'])
+print('firmware_url=', d['firmware_url'])
+print('size=', d['size'])
+print('sha256_len=', len(d['sha256']))
+PY
+          done
