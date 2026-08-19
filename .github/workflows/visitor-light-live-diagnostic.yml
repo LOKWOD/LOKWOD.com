@@ -14,30 +14,59 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify live backend, protected routes, and visitor beacon
+      - name: Verify live backend, dashboard assets, OTA, and visitor beacon
         shell: bash
         run: |
           set -u -o pipefail
           WORKER='https://lokwod-visitor-beacon.syracuseappraiser.workers.dev'
 
           echo '=== DNS ==='
-          echo 'NS:'; dig +short NS lokwod.com
           echo 'A:'; dig +short A lokwod.com
           echo 'www CNAME:'; dig +short CNAME www.lokwod.com
+          echo 'updates CNAME:'; dig +short CNAME updates.lokwod.com
 
           probe() {
-            path="$1"
+            url="$1"
             out=$(mktemp); hdr=$(mktemp)
-            code=$(curl -sS --max-time 20 -D "$hdr" -o "$out" -w '%{http_code}' "https://lokwod.com$path" || true)
-            echo "--- $path -> HTTP $code bytes=$(wc -c < "$out" 2>/dev/null || echo 0) ---"
-            grep -iE '^(location|server|content-type|set-cookie):' "$hdr" | head -12 || true
+            code=$(curl -sS --max-time 20 -D "$hdr" -o "$out" -w '%{http_code}' "$url" || true)
+            echo "--- $url -> HTTP $code bytes=$(wc -c < "$out" 2>/dev/null || echo 0) ---"
+            grep -iE '^(location|server|content-type|set-cookie):' "$hdr" | head -10 || true
             if grep -Fq "$WORKER/beacon.js" "$out"; then echo 'VISITOR_BEACON=present'; else echo 'VISITOR_BEACON=missing'; fi
-            if grep -Fq 'data-site="lokwod"' "$out"; then echo 'VISITOR_SITE_ID=present'; else echo 'VISITOR_SITE_ID=missing'; fi
           }
 
-          for p in / /login /portal '/signin-with-chatgpt?return_to=%2Fportal' /admin /admin/login /firmware /support /beta; do probe "$p"; done
+          for p in / /login /portal '/signin-with-chatgpt?return_to=%2Fportal' /admin /admin/login /firmware /support /beta; do probe "https://lokwod.com$p"; done
 
-          echo '=== Visitor Worker health ==='
+          echo '=== DYNAMIC DASHBOARD CLIENT ASSETS ==='
+          for f in password-form-ByFkEbCB.js fleet-explorer-CcRs--a4.js plan-control-B90fg5sr.js portal-client-_LjjmoS0.js admin-login-form-BArNTL61.js sign-out-DCtjIMSg.js support-form-DQKCUVCd.js beta-form-CSit1qBe.js; do
+            code=$(curl -sS --max-time 20 -o /dev/null -w '%{http_code}' "https://lokwod.com/assets/$f" || true)
+            echo "$f -> HTTP $code"
+          done
+
+          echo '=== OTA UPDATE BACKEND ==='
+          for url in \
+            'https://updates.lokwod.com/hvac/stable/manifest.json' \
+            'https://updates.lokwod.com/well-monitor/stable/manifest.json'; do
+            out=$(mktemp); hdr=$(mktemp)
+            code=$(curl -sS --max-time 20 -D "$hdr" -o "$out" -w '%{http_code}' "$url" || true)
+            echo "--- $url -> HTTP $code bytes=$(wc -c < "$out" 2>/dev/null || echo 0) ---"
+            grep -iE '^(location|server|content-type):' "$hdr" | head -10 || true
+            if [ "$code" = '200' ]; then
+              python3 - "$out" <<'PY'
+import json,sys
+p=sys.argv[1]
+try:
+    d=json.load(open(p))
+    print('version=', d.get('version'))
+    print('firmware_url=', d.get('firmware_url'))
+    print('size=', d.get('size'))
+    print('sha256_len=', len(str(d.get('sha256',''))))
+except Exception as e:
+    print('JSON_PARSE_ERROR=', e)
+PY
+            fi
+          done
+
+          echo '=== Visitor Worker ==='
           curl -fsS --max-time 15 "$WORKER/health" || true
           echo
           payload='{"site":"lokwod","path":"/__restoration-check","title":"LOKWOD restoration check"}'
