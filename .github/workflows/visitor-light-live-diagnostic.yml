@@ -12,7 +12,7 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     steps:
-      - name: Check live beacon markup and Worker
+      - name: Check live beacon markup, hosting, and Worker
         shell: bash
         run: |
           set -u -o pipefail
@@ -29,15 +29,21 @@ jobs:
           fi
 
           check_site() {
-            url="$1"
-            site="$2"
+            host="$1"
+            url="$2"
+            site="$3"
             tmp="$(mktemp)"
-            echo "=== $url ==="
+            echo "=== DNS $host ==="
+            getent ahostsv4 "$host" | awk '{print $1}' | sort -u || true
+            echo "=== HEADERS $url ==="
+            curl --silent --show-error --location --head --max-time 20 "$url" | sed -n '1,80p' || true
+            echo "=== HTML $url ==="
             if ! curl --fail --silent --show-error --location --max-time 20 "$url" -o "$tmp"; then
               echo "Live page fetch FAILED for $site"
               failures=$((failures+1))
               return
             fi
+            echo "bytes=$(wc -c < "$tmp") sha256=$(sha256sum "$tmp" | awk '{print $1}')"
             if grep -Fq "$WORKER/beacon.js" "$tmp"; then
               echo 'Worker script URL present'
             else
@@ -52,8 +58,8 @@ jobs:
             fi
           }
 
-          check_site 'https://lokwod.com/' 'lokwod'
-          check_site 'https://nauticaldream.com/' 'nautical-dream'
+          check_site 'lokwod.com' 'https://lokwod.com/' 'lokwod'
+          check_site 'nauticaldream.com' 'https://nauticaldream.com/' 'nautical-dream'
 
           hit() {
             origin="$1"
