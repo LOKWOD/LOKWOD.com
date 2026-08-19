@@ -15,22 +15,41 @@ jobs:
       - name: Check live beacon markup and Worker
         shell: bash
         run: |
-          set -euo pipefail
+          set -u -o pipefail
           WORKER='https://lokwod-visitor-beacon.syracuseappraiser.workers.dev'
+          failures=0
 
           echo '=== Worker health ==='
-          curl --fail --silent --show-error --max-time 15 "$WORKER/health"
-          echo
+          if curl --fail --silent --show-error --max-time 15 "$WORKER/health"; then
+            echo
+            echo 'Worker health OK'
+          else
+            echo 'Worker health FAILED'
+            failures=$((failures+1))
+          fi
 
           check_site() {
             url="$1"
             site="$2"
             tmp="$(mktemp)"
             echo "=== $url ==="
-            curl --fail --silent --show-error --location --max-time 20 "$url" -o "$tmp"
-            grep -F "$WORKER/beacon.js" "$tmp"
-            grep -F "data-site=\"$site\"" "$tmp"
-            echo "Beacon markup OK for $site"
+            if ! curl --fail --silent --show-error --location --max-time 20 "$url" -o "$tmp"; then
+              echo "Live page fetch FAILED for $site"
+              failures=$((failures+1))
+              return
+            fi
+            if grep -Fq "$WORKER/beacon.js" "$tmp"; then
+              echo 'Worker script URL present'
+            else
+              echo 'Worker script URL MISSING'
+              failures=$((failures+1))
+            fi
+            if grep -Fq "data-site=\"$site\"" "$tmp"; then
+              echo "data-site=$site present"
+            else
+              echo "data-site=$site MISSING"
+              failures=$((failures+1))
+            fi
           }
 
           check_site 'https://lokwod.com/' 'lokwod'
@@ -41,14 +60,17 @@ jobs:
             site="$2"
             path="$3"
             payload="{\"site\":\"$site\",\"path\":\"$path\",\"title\":\"Visitor Light live diagnostic\"}"
-            status="$(curl --silent --show-error --max-time 15 --output /tmp/visitor-response --write-out '%{http_code}' --request POST "$WORKER/v1/hit" --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/140.0 Safari/537.36' --header "Origin: $origin" --header 'Content-Type: text/plain;charset=UTF-8' --data-raw "$payload")"
+            status="$(curl --silent --show-error --max-time 15 --output /tmp/visitor-response --write-out '%{http_code}' --request POST "$WORKER/v1/hit" --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/140.0 Safari/537.36' --header "Origin: $origin" --header 'Content-Type: text/plain;charset=UTF-8' --data-raw "$payload" || true)"
             echo "$site synthetic hit -> HTTP $status"
             if [ "$status" != '204' ]; then
-              cat /tmp/visitor-response
-              exit 1
+              cat /tmp/visitor-response || true
+              failures=$((failures+1))
             fi
           }
 
           hit 'https://lokwod.com' 'lokwod' '/__visitor-light-diagnostic'
           sleep 2
           hit 'https://nauticaldream.com' 'nautical-dream' '/__visitor-light-diagnostic'
+
+          echo "Diagnostic failures: $failures"
+          test "$failures" -eq 0
