@@ -1,4 +1,4 @@
-# Post-DNS restoration verification
+# Post-DNS restoration verification rerun
 name: LOKWOD backend restoration verification
 
 on:
