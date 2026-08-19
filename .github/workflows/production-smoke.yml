@@ -1,0 +1,67 @@
+name: LOKWOD production smoke test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 12 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify production routing and OTA manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          expect_code() {
+            url="$1"
+            expected="$2"
+            code=$(curl -sS --max-time 20 -o /tmp/body -D /tmp/hdr -w '%{http_code}' "$url")
+            echo "$url -> HTTP $code"
+            if [ "$code" != "$expected" ]; then
+              echo "Expected HTTP $expected"
+              cat /tmp/hdr
+              exit 1
+            fi
+          }
+
+          expect_redirect() {
+            url="$1"
+            expected_prefix="$2"
+            code=$(curl -sS --max-time 20 -o /dev/null -D /tmp/hdr -w '%{http_code}' "$url")
+            location=$(awk 'BEGIN{IGNORECASE=1} /^location:/{sub(/\r$/,""); print substr($0,11)}' /tmp/hdr | tail -1)
+            echo "$url -> HTTP $code location=$location"
+            case "$code" in 301|302|303|307|308) ;; *) echo 'Expected redirect'; exit 1;; esac
+            case "$location" in "$expected_prefix"*) ;; *) echo "Unexpected redirect target: $location"; exit 1;; esac
+          }
+
+          expect_code 'https://lokwod.com/' 200
+          expect_code 'https://lokwod.com/login' 200
+          expect_redirect 'https://lokwod.com/portal' 'https://lokwod.com/signin-with-chatgpt'
+          expect_redirect 'https://lokwod.com/admin' 'https://lokwod.com/admin/login'
+          expect_code 'https://lokwod.com/admin/login' 200
+          expect_code 'https://lokwod.com/firmware' 200
+          expect_code 'https://lokwod.com/support' 200
+          expect_code 'https://lokwod.com/beta' 200
+
+          for manifest in \
+            'https://updates.lokwod.com/hvac/stable/manifest.json' \
+            'https://updates.lokwod.com/well-monitor/stable/manifest.json'; do
+            curl -fsS --max-time 20 "$manifest" -o /tmp/manifest.json
+            python3 - <<'PY'
+import json
+p='/tmp/manifest.json'
+d=json.load(open(p))
+for key in ('version','firmware_url','size','build_date','release_notes','sha256'):
+    assert key in d, f'missing {key}'
+assert isinstance(d['version'], str) and d['version']
+assert isinstance(d['firmware_url'], str) and d['firmware_url'].startswith('https://')
+assert isinstance(d['size'], int) and d['size'] > 0
+assert isinstance(d['sha256'], str) and len(d['sha256']) == 64
+print('manifest OK', d['version'])
+PY
+          done
