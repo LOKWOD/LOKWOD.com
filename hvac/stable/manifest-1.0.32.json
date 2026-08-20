@@ -1,0 +1,10 @@
+{
+  "version": "1.0.32",
+  "firmware_url": "https://lokwod.com/hvac/stable/LOKWOD_HVAC_Controller-1.0.32.bin",
+  "size": 1961472,
+  "build_date": "2026-08-20",
+  "release_notes": "Outdoor AQI and UV forecast on the local HVAC dashboard, with severity guidance and safer automatic release packaging.",
+  "sha256": "c6eacd54e1f166c218e0db73488bfef503f4edfc795eb39bdf233e586a3a1bd3",
+  "hardware": "P4-4B-R1",
+  "channel": "stable"
+}
