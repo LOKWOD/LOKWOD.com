@@ -19,7 +19,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL 'https://sdmntprnorthcentralus.oaiusercontent.com/files/00000000-d3b8-822f-9861-164fa51ade41/raw?se=2026-08-20T05%3A24%3A45Z&sp=r&sv=2026-02-06&sr=b&scid=cd0a82e8-54bd-4fc4-8e8b-8d4093eb944e&skoid=bbd22fc4-f881-4ea4-b2f3-c12033cf6a8b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-19T23%3A51%3A09Z&ske=2026-08-20T23%3A51%3A09Z&sks=b&skv=2026-02-06&sig=x3XGOOpxJ1vY0mbrmD0dQbXT8sZl1KYSqwLi7ackEcA%3D' -o /tmp/hvac-v1.0.32.zip
+          curl -fsSL 'https://sdmntprnorthcentralus.oaiusercontent.com/files/00000000-a720-822f-847d-227407f79c35/raw?se=2026-08-20T05%3A26%3A25Z&sp=r&sv=2026-02-06&sr=b&scid=c122e518-0de5-40fd-b5cb-4335c09049fd&skoid=de71a0d5-fb02-4fce-be69-9296aced242b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-19T23%3A49%3A29Z&ske=2026-08-20T23%3A49%3A29Z&sks=b&skv=2026-02-06&sig=2wA9H5%2BU2wzYuL6jKuqcGEUB0VfaBIOJ3JQ%2BfDRPQvY%3D' -o /tmp/hvac-v1.0.32.zip
           rm -rf /tmp/hvac-v1.0.32
           mkdir -p /tmp/hvac-v1.0.32
           unzip -q /tmp/hvac-v1.0.32.zip -d /tmp/hvac-v1.0.32
@@ -40,3 +40,5 @@ jobs:
           git add hvac/stable
           git commit -m "Publish HVAC firmware v1.0.32"
           git push
+
+# Trigger publication after workflow registration
