@@ -1,0 +1,42 @@
+name: Publish HVAC v1.0.32
+
+on:
+  push:
+    paths:
+      - ".github/workflows/publish-hvac-v1.0.32.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download verified OTA bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL 'https://sdmntprnorthcentralus.oaiusercontent.com/files/00000000-d3b8-822f-9861-164fa51ade41/raw?se=2026-08-20T05%3A24%3A45Z&sp=r&sv=2026-02-06&sr=b&scid=cd0a82e8-54bd-4fc4-8e8b-8d4093eb944e&skoid=bbd22fc4-f881-4ea4-b2f3-c12033cf6a8b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-19T23%3A51%3A09Z&ske=2026-08-20T23%3A51%3A09Z&sks=b&skv=2026-02-06&sig=x3XGOOpxJ1vY0mbrmD0dQbXT8sZl1KYSqwLi7ackEcA%3D' -o /tmp/hvac-v1.0.32.zip
+          rm -rf /tmp/hvac-v1.0.32
+          mkdir -p /tmp/hvac-v1.0.32
+          unzip -q /tmp/hvac-v1.0.32.zip -d /tmp/hvac-v1.0.32
+          cd /tmp/hvac-v1.0.32
+          sha256sum -c LOKWOD_HVAC_Controller-1.0.32.bin.sha256
+
+      - name: Publish firmware and manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p hvac/stable
+          cp /tmp/hvac-v1.0.32/LOKWOD_HVAC_Controller-1.0.32.bin hvac/stable/
+          cp /tmp/hvac-v1.0.32/manifest.json hvac/stable/manifest.json
+          cp /tmp/hvac-v1.0.32/manifest-1.0.32.json hvac/stable/
+
+          git config user.name "LOKWOD Release Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add hvac/stable
+          git commit -m "Publish HVAC firmware v1.0.32"
+          git push
