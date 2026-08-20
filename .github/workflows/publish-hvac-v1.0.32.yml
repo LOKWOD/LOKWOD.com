@@ -15,16 +15,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download verified OTA bundle
+      - name: Reconstruct and verify firmware
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL 'https://sdmntprnorthcentralus.oaiusercontent.com/files/00000000-a720-822f-847d-227407f79c35/raw?se=2026-08-20T05%3A26%3A25Z&sp=r&sv=2026-02-06&sr=b&scid=c122e518-0de5-40fd-b5cb-4335c09049fd&skoid=de71a0d5-fb02-4fce-be69-9296aced242b&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-19T23%3A49%3A29Z&ske=2026-08-20T23%3A49%3A29Z&sks=b&skv=2026-02-06&sig=2wA9H5%2BU2wzYuL6jKuqcGEUB0VfaBIOJ3JQ%2BfDRPQvY%3D' -o /tmp/hvac-v1.0.32.zip
-          rm -rf /tmp/hvac-v1.0.32
           mkdir -p /tmp/hvac-v1.0.32
-          unzip -q /tmp/hvac-v1.0.32.zip -d /tmp/hvac-v1.0.32
-          cd /tmp/hvac-v1.0.32
-          sha256sum -c LOKWOD_HVAC_Controller-1.0.32.bin.sha256
+          cat .release-staging/hvac-1.0.32/part-*.b64 |
+            base64 --decode > /tmp/hvac-v1.0.32/LOKWOD_HVAC_Controller-1.0.32.bin
+          echo "c6eacd54e1f166c218e0db73488bfef503f4edfc795eb39bdf233e586a3a1bd3  /tmp/hvac-v1.0.32/LOKWOD_HVAC_Controller-1.0.32.bin" |
+            sha256sum --check -
+          test "$(stat -c %s /tmp/hvac-v1.0.32/LOKWOD_HVAC_Controller-1.0.32.bin)" = "1961472"
 
       - name: Publish firmware and manifest
         shell: bash
@@ -32,13 +32,23 @@ jobs:
           set -euo pipefail
           mkdir -p hvac/stable
           cp /tmp/hvac-v1.0.32/LOKWOD_HVAC_Controller-1.0.32.bin hvac/stable/
-          cp /tmp/hvac-v1.0.32/manifest.json hvac/stable/manifest.json
-          cp /tmp/hvac-v1.0.32/manifest-1.0.32.json hvac/stable/
+
+          cat > hvac/stable/manifest.json <<'EOF'
+          {
+            "version": "1.0.32",
+            "firmware_url": "https://lokwod.com/hvac/stable/LOKWOD_HVAC_Controller-1.0.32.bin",
+            "size": 1961472,
+            "build_date": "2026-08-20",
+            "release_notes": "Outdoor AQI and UV forecast on the local HVAC dashboard, with severity guidance and safer automatic release packaging.",
+            "sha256": "c6eacd54e1f166c218e0db73488bfef503f4edfc795eb39bdf233e586a3a1bd3",
+            "hardware": "P4-4B-R1",
+            "channel": "stable"
+          }
+          EOF
+          cp hvac/stable/manifest.json hvac/stable/manifest-1.0.32.json
 
           git config user.name "LOKWOD Release Bot"
           git config user.email "actions@users.noreply.github.com"
           git add hvac/stable
           git commit -m "Publish HVAC firmware v1.0.32"
           git push
-
-# Trigger publication after workflow registration
